@@ -12,6 +12,12 @@ rust-version = "1.74"
 [dependencies]
 anyhow = "1.0.86"
 axum = "0.7.5"
+clap = { version = "4.5.4", features = ["string"] }
+monero-rpc = { version = "0.4.0", optional = true }
 tokio = { version = "1.37.0", features = ["full"] }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+
+[features]
+monero = ["dep:monero-rpc"]
+aws = []
