@@ -1,0 +1,8 @@
+[profile.release]
+strip = true
+
+[workspace]
+members = [
+    "gantry",
+    "gantry-api",
+]
