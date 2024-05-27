@@ -1,2 +1,2 @@
 #[cfg(feature = "monero")]
-mod monero;
+pub mod monero;
