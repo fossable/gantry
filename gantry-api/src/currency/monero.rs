@@ -8,7 +8,7 @@ use monero_rpc::{RpcClientBuilder, WalletClient};
 use redb::TableDefinition;
 use tracing::{debug, info, instrument};
 
-use crate::AppState;
+use crate::{AppState, CommandLine};
 
 #[derive(Clone, Debug)]
 pub struct MoneroState {
@@ -16,7 +16,7 @@ pub struct MoneroState {
 }
 
 impl MoneroState {
-    pub async fn new() -> anyhow::Result<Self> {
+    pub async fn new(cli: &CommandLine) -> anyhow::Result<Self> {
         debug!("Connecting to wallet RPC");
         let wallet = RpcClientBuilder::new()
             .rpc_authentication(monero_rpc::RpcAuthentication::Credentials {
@@ -57,6 +57,7 @@ pub async fn provision(
     }))
 }
 
+#[instrument(ret)]
 pub async fn scan(State(state): State<AppState>) -> Result<(), StatusCode> {
     // let address_data = state.monero.wallet.get_address(0, None).await?;
 
@@ -66,5 +67,10 @@ pub async fn scan(State(state): State<AppState>) -> Result<(), StatusCode> {
         .incoming_transfers(monero_rpc::TransferType::Available, Some(0), None)
         .await
         .unwrap();
+    Ok(())
+}
+
+#[instrument(ret)]
+pub async fn rates(State(state): State<AppState>) -> Result<(), StatusCode> {
     Ok(())
 }
