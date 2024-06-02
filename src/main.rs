@@ -1,7 +1,11 @@
 use crate::cli::Commands;
+use anyhow::Result;
 use clap::Parser;
+use std::process::ExitCode;
 
-mod cli;
+pub mod cli;
+pub mod currency;
+pub mod hosting;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -10,20 +14,18 @@ struct CommandLine {
     command: Option<Commands>,
 }
 
-fn main() {
-    // Parse command line options before we configure logging so we can set the
-    // default level
-    let command_line = CommandLine::parse();
-
-    // Configure logging
+#[tokio::main]
+async fn main() -> Result<ExitCode> {
+    let args = CommandLine::parse();
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 
     // Dispatch command
-    match &command_line.command {
+    match &args.command {
         Some(Commands::Provision {}) => todo!(),
         Some(Commands::Deprovision {}) => todo!(),
+        Some(Commands::Serve(args)) => crate::cli::serve::serve(args).await,
         None => todo!(),
     }
 }

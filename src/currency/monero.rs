@@ -3,12 +3,12 @@ use axum::{
     http::StatusCode,
     Json,
 };
-use gantry::api::ProvisionAccountResponse;
 use monero_rpc::{RpcClientBuilder, WalletClient};
 use redb::TableDefinition;
+use serde::{Deserialize, Serialize};
 use tracing::{debug, info, instrument};
 
-use crate::{AppState, CommandLine};
+use crate::{cli::serve::ServeArgs, AppState, CommandLine};
 
 #[derive(Clone, Debug)]
 pub struct MoneroState {
@@ -16,7 +16,7 @@ pub struct MoneroState {
 }
 
 impl MoneroState {
-    pub async fn new(cli: &CommandLine) -> anyhow::Result<Self> {
+    pub async fn new(cli: &ServeArgs) -> anyhow::Result<Self> {
         debug!("Connecting to wallet RPC");
         let wallet = RpcClientBuilder::new()
             .rpc_authentication(monero_rpc::RpcAuthentication::Credentials {
@@ -32,6 +32,12 @@ impl MoneroState {
         );
         Ok(Self { wallet })
     }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ProvisionAccountResponse {
+    /// Account ID (wallet address)
+    pub address: String,
 }
 
 // TODO proper rate limiting
@@ -68,6 +74,15 @@ pub async fn scan(State(state): State<AppState>) -> Result<(), StatusCode> {
         .await
         .unwrap();
     Ok(())
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CurrentRatesResponse {
+    pub currency: Currency,
+    pub hour: u64,
+    pub day: u64,
+    pub month: u64,
+    pub year: u64,
 }
 
 #[instrument(ret)]

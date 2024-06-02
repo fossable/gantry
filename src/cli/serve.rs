@@ -4,19 +4,15 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use clap::Parser;
+use clap::{Args, Parser};
 use redb::{Database, TableDefinition};
 use std::{env, process::ExitCode, sync::Arc};
 use tokio::net::TcpListener;
 use tokio::spawn;
 use tracing::info;
 
-pub mod currency;
-pub mod hosting;
-
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-struct CommandLine {
+#[derive(Debug, Clone, Args)]
+pub struct ServeArgs {
     bind: Option<String>,
     datadir: Option<String>,
     // #[cfg(feature = "monero")]
@@ -31,13 +27,7 @@ pub struct AppState {
     monero: crate::currency::monero::MoneroState,
 }
 
-#[tokio::main]
-async fn main() -> Result<ExitCode> {
-    let args = CommandLine::parse();
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .init();
-
+pub async fn serve(args: &ServeArgs) -> Result<ExitCode> {
     let state = AppState {
         db: Arc::new(Database::create(format!(
             "{}/app.db",
