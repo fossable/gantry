@@ -3,7 +3,7 @@ name = "gantry"
 description = "The gantry HTTP server and CLI"
 version = "0.0.1"
 edition = "2021"
-license = "AGPL-3.0-only"
+license = "Unlicense"
 authors = ["Tyler Cook"]
 readme = "README.md"
 repository = "https://github.com/fossable/gantry"
@@ -14,7 +14,9 @@ anyhow = "1.0.86"
 axum = "0.7.5"
 clap = { version = "4.5.4", features = ["string", "derive"] }
 monero = "0.21.0"
-monero-rpc = { version = "0.4.0", features = ["rpc_authentication"], optional = true }
+monero-rpc = { version = "0.4.0", features = [
+  "rpc_authentication",
+], optional = true }
 redb = "2.1.0"
 reqwest = { version = "0.12.4", features = ["json"] }
 serde = { version = "1.0.203", features = ["derive"] }
